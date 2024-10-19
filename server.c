@@ -5,8 +5,14 @@
 #include <unistd.h>       /* for close() */
 #include <string.h>       /* support any string ops */
 #include <openssl/evp.h>  /* for OpenSSL EVP digest libraries/SHA256 */
+#include <dirent.h>
 
 int main(){
+        // used for server file directory
+        DIR *d;
+        struct dirent *dir;
+
+
         char *ip = "127.0.0.1";
         int port = 5566;
 
@@ -23,7 +29,7 @@ int main(){
                 exit(1);
         }
         printf("[+]TCP server socket created.\n");
-        
+
         memset(&server_addr, '\0', sizeof(server_addr));
         server_addr.sin_family = AF_INET;
         server_addr.sin_port = port;
@@ -39,8 +45,7 @@ int main(){
         listen(server_sock, 5);
         printf("Listening...");
 
-        while(1)
-        {
+        while(1){
                 // CONNECT
                 addr_size = sizeof(client_addr);
                 client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &addr_size);
@@ -60,7 +65,7 @@ int main(){
                 // RECIEVE FIRST INPUT
                 bzero(buffer, 1024);
                 recv(client_sock, buffer, sizeof(buffer), 0);
-                printf("Client: %s\n", buffer);
+                printf("Client: %s\n\n", buffer);
 
                 // LOOP WHILE INPUT IS NOT 4 FOR LEAVE
                 while (strcmp(buffer, "4") != 0)
@@ -68,6 +73,33 @@ int main(){
                         if (strcmp(buffer, "1") == 0)
                         {
                                 // LIST
+                                char fileList[1024];
+                                strcpy(fileList, "Server File List:");
+                                d = opendir("server_files");
+                                if (d == NULL)
+                                {
+                                        printf("Missing directory for server files");
+                                }
+                                else if (d) {
+                                        while ((dir = readdir(d)) != NULL){
+                                                //printf("%s\n", dir->d_name);
+                                                strcat(fileList, "\n");
+                                                strcat(fileList, dir->d_name);
+                                        }
+                                        strcat(fileList, "\n\n");
+
+                                        // SEND FILE LIST
+                                        bzero(buffer, 1024);
+                                        strcpy(buffer, fileList);
+                                        printf("Server: Sending Files\n\n");
+                                        send(client_sock, buffer, strlen(buffer), 0);
+
+                                        // RECIEVE CONFIRMATION
+                                        bzero(buffer, 1024);
+                                        recv(client_sock, buffer, sizeof(buffer), 0);
+                                        printf("Client: %s\n", buffer);
+                                        //printf("SERVER FILE LIST: %s", fileList);
+                                }
                         }
                         if (strcmp(buffer, "2") == 0)
                         {
@@ -86,13 +118,15 @@ int main(){
                         // RECIEVE INPUT
                         bzero(buffer, 1024);
                         recv(client_sock, buffer, sizeof(buffer), 0);
-                        printf("Client: %s\n", buffer);
+                        printf("Client: %s\n\n", buffer);
 
                 }
 
-                // INPUT IS 4, DISCONNECT
+                // INPUT IS 4, DISCONNECT AND CLOSE DIRECTORY
+                closedir(d);
+
                 bzero(buffer, 1024);
-                strcpy(buffer, "LEAVE");
+                strcpy(buffer, "LEAVE\n");
                 printf("Server: %s\n", buffer);
                 send(client_sock, buffer, strlen(buffer), 0);
                 close(client_sock);
@@ -101,7 +135,7 @@ int main(){
                 //close(client_sock);
                 //printf("[+]Client disconnected.\n\n");
         }
-        
+
 
 
 
