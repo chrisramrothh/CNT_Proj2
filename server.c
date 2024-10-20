@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <pthread.h>
 
+int compareFile(FILE *file1, FILE *file2, int *line, int*col);
 void *handle_connection(void *p_client_sock);
 
 int main()
@@ -161,4 +162,40 @@ void *handle_connection(void *p_client_sock)
         printf("[+]Client disconnected.\n\n");
 
         return NULL;
+}
+
+// FUNCTION TO COMPARE TWO FILES (RETURNS 0 IF THE SAME, -1 IF DIFFERENT)
+// UNSURE WHETHER IT WILL BE IMPLEMENTED IN SERVER OR CLIENT
+int compareFile(FILE *file1, FILE *file2, int *line, int *col)
+{
+        char ch1, ch2;
+        *line = 1;
+        *col = 0;
+
+        do
+        {
+                ch1 = fgetc(file1);
+                ch2 = fgetc(file2);
+
+                if (ch1 == '\n')
+                {
+                        *line += 1;
+                        *col = 0;
+                }
+
+                if (ch1 != ch2)
+                {
+                        return -1;
+                }
+                *col += 1;
+        } while (ch1 != EOF && ch2 != EOF);
+
+        if (ch1 == EOF && ch2 == EOF)
+        {
+                return 0;
+        }
+        else
+        {
+                return -1;
+        }
 }
