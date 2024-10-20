@@ -15,7 +15,7 @@ Language Used: C
 - Use ./server to start the server
 - Use ./client to start a client
 
-###### Once connected and the confirmation messages are sent between the server and client, client can select an input 1-4 in the command-line interface.
+##### Once connected and the confirmation messages are sent between the server and client, client can select an input 1-4 in the command-line interface.
 
 - 1 - LIST (request list of server's files)
 - 2 - DIFF (request list of files differing between server and client) // Not functional yet
