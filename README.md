@@ -1,26 +1,71 @@
-# CNT4007 Project2 - Christopher Ramroth, Connor Lavado Devaney
+# CNT4007 Project 2 - Christopher Ramroth, Connor Devaney
 
-Server that contains a directory of files, and clients can connect to the server, request a list of the files that server has, request a diff of the server files compared to the client's files, and pull all files listed in the diff to the client. Uses a TCP connection and allows for concurrent connecting clients using pthreads.
+This project implements a server that hosts a directory of files and allows clients to connect to the server to:
+- Request a list of the files the server has.
+- Request a diff between the server's files and the client's files based on content (using CRC32 checksums).
+- Pull the files listed in the diff to the client.
+- The server uses TCP connections and allows concurrent clients using `pthreads`.
 
-Language Used: C
+### Language Used: C
 
 ## Installation
 
-- Download server.c, client.c, makefile, server_files, and client_files
-- Run "make" to make the executables for server and client
-- Can run "make clean" to remove the exeucutables for server and client
+1. **Update the system and install dependencies**:
+   Run the following commands to ensure your system is up-to-date and has the required libraries for compiling the project:
+   
+   ```bash
+   sudo apt update
+   sudo apt install build-essential zlib1g-dev
+   ```
+
+2. **Download the project files**:
+   Download `server.c`, `client.c`, `makefile`, `server_files`, and `client_files`.
+
+3. **Compile the project**:
+   Run `make` to create the executables for the server and client:
+   
+   ```bash
+   make
+   ```
+
+4. **Clean up (optional)**:
+   To remove the executables, you can run:
+   
+   ```bash
+   make clean
+   ```
 
 ## Usage
 
-- Use ./server to start the server
-- Use ./client to start a client
+1. **Start the server**: 
+   ```bash
+   ./server
+   ```
 
-##### Once connected and the confirmation messages are sent between the server and client, client can select an input 1-4 in the command-line interface.
+2. **Start a client**: 
+   ```bash
+   ./client
+   ```
 
-- 1 - LIST (request list of server's files)
-- 2 - DIFF (request list of files differing between server and client) // Not functional yet
-- 3 - PULL (pulls the files listed in diff to the client) // Not functional yet
-- 4 - LEAVE (closes connection between client and server)
+Once the connection is established and confirmation messages are exchanged between the server and client, the client can select an option by inputting a number from 1-4 in the command-line interface.
 
-##### If you are done using the server, close by using CTRL+C in the command-line interface.
+### Client Command Options:
 
+- **1 - LIST**: Request a list of the server's files.
+- **2 - DIFF**: Request a comparison of files between the server and client using CRC32 checksums (missing or different files will be listed).
+- **3 - PULL**: Pull the files listed in the diff from the server to the client.
+- **4 - LEAVE**: Close the connection between the client and server.
+
+### Closing the Server:
+
+When you're done, you can close the server by using `CTRL+C` in the command-line interface.
+
+### Features Implemented:
+
+- **LIST**: Clients can request a list of the files stored on the server.
+- **DIFF**: Clients can request a diff between their local files and the server's files, based on content comparison using CRC32 checksums.
+- **PULL**: Clients can request to pull missing or different files from the server based on the result of the diff operation.
+
+---
+
+This should cover both the dependencies installation and the usage of the project. Let me know if this looks good or if you want any other modifications!
